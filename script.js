@@ -53,11 +53,58 @@ document.addEventListener("DOMContentLoaded", (event) => {
     const addButton = document.getElementById("add-task-btn");
     const taskInput = document.getElementById("task-input");
     const taskList = document.getElementById("task-list");
+    let tasks = [];
 
-    function addTask() {
-        const taskText = taskInput.value.trim();
+    loadTasks();
+    
 
-        if(taskText == ""){
+    function loadTasks(){
+
+        const storedTasks = localStorage.getItem("tasks");
+        //const jsonStoredTask = JSON.stringify(storedTasks);
+        console.log(storedTasks);
+
+        
+
+        if(storedTasks == null){
+            console.log("No tasks stored");
+        }
+        else {
+            const parsedStoredTask = JSON.parse(storedTasks);
+            tasks = parsedStoredTask;//populating the tasks array
+            //console.log(parsedStoredTask);
+
+            parsedStoredTask.forEach(taskText => {
+            addTask(taskText);
+        });
+        }
+
+
+    }
+
+    //loadTasks();
+    
+    
+    function saveTask(){
+
+        const jsonArray = JSON.stringify(tasks);
+        localStorage.setItem("tasks", jsonArray);
+
+    }
+
+    // saveTask();
+
+
+    function addTask(taskText) {
+
+        const fromStorage = (taskText !== undefined);
+
+        if (!fromStorage){
+            taskText = taskInput.value.trim();
+
+        }
+
+        if(taskText === ""){
             alert("Please enter a task!")
         }else {
 
@@ -74,8 +121,15 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
             listElement.appendChild(removeButton);
             taskList.appendChild(listElement);
+            tasks.push(taskText);
 
-            taskInput.value = "";
+            if(!fromStorage){
+                saveTask();
+            }
+
+            if (!fromStorage) {
+                taskInput.value = "";
+            }
         }    
     }
 
@@ -89,6 +143,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 addTask();
             
             }
-    })
+    });
+
+
+
 
 })
